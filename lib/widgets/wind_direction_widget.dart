@@ -14,9 +14,13 @@ class WindDirectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double angleInRadians = windDegree * pi / 180;
+    // Adjust rotation if your arrow points "up"
+    final angleInRadians = (windDegree) * pi / 180;
+
+    final textColor = isDaytime ? Colors.white : Colors.black;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Transform.rotate(
           angle: angleInRadians,
@@ -24,16 +28,13 @@ class WindDirectionWidget extends StatelessWidget {
             'assets/arrow.svg',
             width: 50,
             height: 50,
-            colorFilter: ColorFilter.mode(
-              !isDaytime ? Colors.black : Colors.white,
-              BlendMode.srcIn,
-            ),
+            colorFilter: ColorFilter.mode(textColor, BlendMode.srcIn),
           ),
         ),
         const SizedBox(height: 6),
         Text(
           _getDirectionLabel(windDegree),
-          style: TextStyle(color: !isDaytime ? Colors.black : Colors.white),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
         ),
       ],
     );

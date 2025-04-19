@@ -71,7 +71,10 @@ class WindDetails extends StatelessWidget {
                     ),
                   ],
                 ),
-                WindDirectionWidget(windDegree: 300, isDaytime: isDaytime),
+                WindDirectionWidget(
+                  windDegree: direction,
+                  isDaytime: isDaytime,
+                ),
                 const SizedBox(width: 2),
               ],
             ),

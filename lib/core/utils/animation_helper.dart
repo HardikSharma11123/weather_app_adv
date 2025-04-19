@@ -2,7 +2,7 @@ String getWeatherAnimation(String condition) {
   switch (condition.toLowerCase()) {
     case 'clear':
       return 'assets/lottie/sunny.json';
-    case 'cloudy':
+    case 'clouds':
       return 'assets/lottie/cloudy.json';
     case 'rain':
       return 'assets/lottie/rain.json';

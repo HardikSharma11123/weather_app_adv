@@ -1,4 +1,3 @@
-// lib/views/weather_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weather_app_adv/services/weather_provider.dart';
@@ -12,6 +11,8 @@ class WeatherScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final weatherAsync = ref.watch(weatherDataProvider);
+    final cityController = TextEditingController();
+    final selectedCity = ref.watch(selectedCityProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -34,17 +35,38 @@ class WeatherScreen extends ConsumerWidget {
                   padding: const EdgeInsets.only(top: 20),
                   children: [
                     AppBar(
-                      title: Text(
-                        weather.city,
-                        style: const TextStyle(
-                          fontSize: 34,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                       backgroundColor: Colors.transparent,
                       elevation: 0,
                       centerTitle: true,
+                      title: TextField(
+                        controller: cityController,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: selectedCity,
+                          hintStyle: const TextStyle(color: Colors.white54),
+                          filled: true,
+                          fillColor: Colors.white24,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.search, color: Colors.white),
+                            onPressed: () {
+                              final newCity = cityController.text.trim();
+                              if (newCity.isNotEmpty) {
+                                ref.read(selectedCityProvider.notifier).state =
+                                    newCity;
+                                cityController.clear();
+                              }
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -62,6 +84,8 @@ class WeatherScreen extends ConsumerWidget {
                         sunrise: weather.sunrise,
                         sunset: weather.sunset,
                         tempfeels: weather.tempfeels,
+                        latitude: weather.lat,
+                        longitude: weather.lon,
                       ),
                     ),
                   ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:weather_app_adv/core/utils/decorations.dart';
 
 class CityTempratureCard extends StatelessWidget {
+  final String city;
   final bool isDaytime;
   final double temperature;
   final String condition;
@@ -10,6 +11,7 @@ class CityTempratureCard extends StatelessWidget {
     required this.isDaytime,
     required this.temperature,
     required this.condition,
+    required this.city,
   });
 
   @override
@@ -22,9 +24,16 @@ class CityTempratureCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(
+            city,
+            style: TextStyle(
+              fontSize: 40,
+              color: !isDaytime ? Colors.black : Colors.white,
+            ),
+          ),
+          Text(
             "$temperature°C | $condition",
             style: TextStyle(
-              fontSize: 46,
+              fontSize: 35,
               color: !isDaytime ? Colors.black : Colors.white,
             ),
           ),

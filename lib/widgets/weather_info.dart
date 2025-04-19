@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:weather_app_adv/core/utils/decorations.dart';
 import 'package:weather_app_adv/widgets/city_temprature_card.dart';
 import 'package:weather_app_adv/widgets/hourly_forecast.dart';
@@ -17,6 +19,8 @@ class WeatherInfo extends StatelessWidget {
   final double tempfeels;
   final double direction;
   final double gust;
+  final double latitude;
+  final double longitude;
   final List<Map<String, dynamic>> hourlyForecast;
   final List<Map<String, dynamic>> weeklyForecast;
 
@@ -35,6 +39,8 @@ class WeatherInfo extends StatelessWidget {
     required this.gust,
     required this.tempfeels,
     required this.hourlyForecast,
+    required this.latitude,
+    required this.longitude,
   }) : super(key: key);
 
   @override
@@ -46,6 +52,7 @@ class WeatherInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CityTempratureCard(
+              city: city,
               isDaytime: isDaytime,
               temperature: temperature,
               condition: condition,
@@ -80,9 +87,6 @@ class WeatherInfo extends StatelessWidget {
     );
   }
 
-  // City and temperature display card
-
-  // Map section
   Widget _buildMapSection() {
     return Container(
       width: double.infinity,
@@ -93,19 +97,51 @@ class WeatherInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Map",
+              "Weather Map",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: !isDaytime ? Colors.black : Colors.white,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 8),
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.indigo,
-                borderRadius: BorderRadius.circular(15),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: SizedBox(
+                height: 200,
+                child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: LatLng(latitude, longitude),
+                    initialZoom: 7,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      // Note: subdomains may no longer be needed with newer versions
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    // Weather overlay with your actual API key
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=538e384934e8f157d8305c0e35fabd65',
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: LatLng(latitude, longitude),
+                          width: 40,
+                          height: 40,
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.red,
+                            size: 32,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -114,7 +150,7 @@ class WeatherInfo extends StatelessWidget {
     );
   }
 
-  // Info cards in a row
+  // Info cards row (Humidity & Feels Like)
   Widget _buildInfoRow() {
     return Row(
       children: [
@@ -137,7 +173,22 @@ class WeatherInfo extends StatelessWidget {
     );
   }
 
-  // Single info card
+  // Additional info row (Sunrise & Sunset)
+  Widget _buildAdditionalInfoRow() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildInfoCard("Sunrise", sunrise, Icons.wb_sunny_outlined),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildInfoCard("Sunset", sunset, Icons.nightlight_outlined),
+        ),
+      ],
+    );
+  }
+
+  // Single Info Card widget
   Widget _buildInfoCard(String title, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -166,21 +217,4 @@ class WeatherInfo extends StatelessWidget {
       ),
     );
   }
-
-  // Additional info row (Sunrise/Sunset)
-  Widget _buildAdditionalInfoRow() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildInfoCard("Sunrise", sunrise, Icons.wb_sunny_outlined),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildInfoCard("Sunset", sunset, Icons.nightlight_outlined),
-        ),
-      ],
-    );
-  }
-
-  // Weekly forecast
 }
